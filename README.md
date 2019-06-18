@@ -596,5 +596,6 @@ hello-world-project4   3         3         3            3           39s
 NAME                  TYPE           CLUSTER-IP       EXTERNAL-IP                                                               PORT(S)          AGE
 kubernetes            ClusterIP      100.64.0.1       <none>                                                                    443/TCP          8m23s
 my-service-project4   LoadBalancer   100.65.142.117   a99351e3d919a11e9bcaa0696bd434c3-1696082251.us-west-2.elb.amazonaws.com   8080:31621/TCP   31s
-```
+(base) private@ubuntu:~/devops/project4$ curl http://a99351e3d919a11e9bcaa0696bd434c3-1696082251.us-west-2.elb.amazonaws.com:8080
+Hello Kubernetes!
 ```

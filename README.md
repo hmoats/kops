@@ -1,7 +1,8 @@
-# kops + kubernetes + AWS Tutorial
+# Deploying kubernetes on AWS using kops Tutorial
 
-## Documentation Reference
-- https://github.com/kubernetes/kops/blob/master/docs/aws.md
+### Table of Contents
+**[Getting Started](#getting-started)**<br>
+**[Configuration Example](#configuration-example)**<br>
 
 ## Getting Started
 
@@ -9,15 +10,14 @@ Complete "Getting Started" document @ https://github.com/kubernetes/kops/blob/ma
 
 This tutorial will ask you to install kops, kubectl and setup your AWS environment. The tuturial will require an AWS account where you can create various resources. I've used a personal AWS account in this tutorial and a public domain hosted by route53 (Scenario 1b). There are other domain options including optional DNS using a .local domain. 
 
+## Configuration example
+
+In this runbook I've ommited the installation of kops, kubernetes and setting up your AWS environment. They are covered in the "Getting Started" document and many web sites describe how to handle any issues. The main purpose of this runbook is to show how I used kops to deploy my kubernetes cluster on AWS using the instructions from the "Getting Started" document
+
 **My environment**
 
-- Public DNS (Scenario 1b): dev.oyarsa.net
-- Account: private AWS
+- Public DNS (Scenario 1b in "Getting Started"): project4.dev.oyarsa.net
 - Region: us-west-2
-
-## Step by Step Runbook
-
-In this runbook I've ommited the installation of kops, kubernetes and setting up your AWS environment. They are covered in the "Getting Started" document and many web sites describe how to handle any issues. The main purpose here is to show how I used kops to deploy my kubernetes cluster.
 
 ### Step 1: Created a project working directory
 ```

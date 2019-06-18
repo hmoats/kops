@@ -539,3 +539,41 @@ Edit cancelled, no changes made.
 ```
 **Step 8:**
 ```
+(base) private@ubuntu:~/devops/project4$ kops validate cluster
+Using cluster from kubectl context: project4.dev.oyarsa.net
+
+Validating cluster project4.dev.oyarsa.net
+
+INSTANCE GROUPS
+NAME			ROLE	MACHINETYPE	MIN	MAX	SUBNETS
+master-us-west-2a	Master	m3.medium	1	1	us-west-2a
+nodes			Node	t2.medium	2	2	us-west-2a
+
+NODE STATUS
+NAME						ROLE	READY
+ip-172-20-46-124.us-west-2.compute.internal	master	True
+ip-172-20-62-58.us-west-2.compute.internal	node	True
+ip-172-20-63-144.us-west-2.compute.internal	node	True
+
+Your cluster project4.dev.oyarsa.net is ready
+(base) private@ubuntu:~/devops/project4$ kops get clusters project4.dev.oyarsa.net
+NAME			CLOUD	ZONES
+project4.dev.oyarsa.net	aws	us-west-2a
+(base) private@ubuntu:~/devops/project4$ kubectl -n kube-system get po
+NAME                                                                  READY   STATUS    RESTARTS   AGE
+dns-controller-7cdbd4d448-b2qvf                                       1/1     Running   0          5m56s
+etcd-manager-events-ip-172-20-46-124.us-west-2.compute.internal       1/1     Running   0          4m56s
+etcd-manager-main-ip-172-20-46-124.us-west-2.compute.internal         1/1     Running   0          5m43s
+kube-apiserver-ip-172-20-46-124.us-west-2.compute.internal            1/1     Running   2          5m24s
+kube-controller-manager-ip-172-20-46-124.us-west-2.compute.internal   1/1     Running   0          5m11s
+kube-dns-57dd96bb49-d58sq                                             3/3     Running   0          4m17s
+kube-dns-57dd96bb49-vkl2p                                             3/3     Running   1          5m56s
+kube-dns-autoscaler-867b9fd49d-lvnhx                                  1/1     Running   2          5m55s
+kube-proxy-ip-172-20-46-124.us-west-2.compute.internal                1/1     Running   0          5m41s
+kube-proxy-ip-172-20-62-58.us-west-2.compute.internal                 1/1     Running   0          4m11s
+kube-proxy-ip-172-20-63-144.us-west-2.compute.internal                1/1     Running   0          4m22s
+kube-scheduler-ip-172-20-46-124.us-west-2.compute.internal            1/1     Running   0          5m24s
+```
+```
+**Step 9:**
+```

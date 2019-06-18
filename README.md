@@ -3,7 +3,7 @@
 ### Table of Contents
 **[Getting Started](#getting-started)**<br>
 **[Configuration Example](#configuration-example)**<br>
-**[Command Cheat Sheet](#)**<br>
+**[Command Cheat Sheet (not ready)](#)**<br>
 
 ## Getting Started
 
@@ -36,7 +36,7 @@ In the configuration example  I've ommited the installation of kops, kubernetes 
 ### Step 1 create a project
 ```
 ##################################################################
-# Created a working directory
+# Create a working directory
 ##################################################################
 (base) private@ubuntu:~/devops$ mkdir project4; cd project4
 (base) private@ubuntu:~/devops/project4$ 
@@ -55,7 +55,8 @@ export KOPS_STATE_STORE=s3://project4-dev-oyarsa-net-state-store
 ### Step 2 create a hosted zone
 ```
 ##################################################################
-# Create zone. Save nameservers output for subdomain.json file described later. 
+# Create zone. Save nameservers output for subdomain.json file 
+# described later. 
 ##################################################################
 (base) private@ubuntu:~/devops/project4$ ID=$(uuidgen) && aws route53 create-hosted-zone --name project4.dev.oyarsa.net --caller-reference $ID | \
 >     jq .DelegationSet.NameServers
@@ -73,7 +74,8 @@ export KOPS_STATE_STORE=s3://project4-dev-oyarsa-net-state-store
 "/hostedzone/Z19KYSK4809JXK"
 
 ##################################################################
-# Create subdomain input file. Update the domain name and nameservers from the previous output.
+# Create subdomain input file. Update the domain name and 
+# nameservers from the previous output.
 ##################################################################
 (base) private@ubuntu:~/devops/project4$ cat subdomain.json 
 {

@@ -577,3 +577,13 @@ kube-scheduler-ip-172-20-46-124.us-west-2.compute.internal            1/1     Ru
 ```
 **Step 9:**
 ```
+(base) private@ubuntu:~/devops/project4$ kubectl get nodes
+NAME                                          STATUS   ROLES    AGE     VERSION
+ip-172-20-49-66.us-west-2.compute.internal    Ready    master   3m57s   v1.12.8
+ip-172-20-51-209.us-west-2.compute.internal   Ready    node     3m2s    v1.12.8
+ip-172-20-62-153.us-west-2.compute.internal   Ready    node     2m53s   v1.12.8
+```
+**Step 10:**
+```
+
+```

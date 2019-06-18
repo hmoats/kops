@@ -1,30 +1,38 @@
 # kops + kubernetes + AWS Tutorial
 
-### Documentation Reference
+---
+## Documentation Reference
 - https://github.com/kubernetes/kops/blob/master/docs/aws.md
 
-### Getting Started
+---
+## Getting Started
 
 Complete "Getting Started" document @ https://github.com/kubernetes/kops/blob/master/docs/aws.md
 
 This tutorial will ask you to install kops, kubectl and setup your AWS environment. The tuturial will require an AWS account where you can create various resources. I've used a personal AWS account in this tutorial and a public domain hosted by route53 (Scenario 1b). There are other domain options including optional DNS using a .local domain. 
 
-My environment
+**My environment**
 
 - Public DNS (Scenario 1b): dev.oyarsa.net
 - Account: private AWS
 - Region: us-west-2
 
-### Step by Step Runbook
+---
+## Step by Step Runbook
 
 In this runbook I've ommited the installation of kops, kubernetes and setting up your AWS environment. They are covered in the "Getting Started" document and many web sites describe how to handle any issues. The main purpose here is to show how I used kops to deploy my kubernetes cluster.
 
-**Step 1:** 
+### Step 1: Created a project working directory
 ```
 (base) private@ubuntu:~/devops$ mkdir project4; cd project4
 (base) private@ubuntu:~/devops/project4$ 
 ```
-**Step 2:**
+### Step 2: Define some environment variables
+- EDITOR: set my editor as vim
+- AWS_DEFAULT_PROFILE: aws profile or authentication
+- AWS_DEFAULT_REGION: aws default region
+- NAME: k8s cluster domain
+- KOPS_STATE_STORE: define kops cluster state storage
 ```
 (base) private@ubuntu:~/devops/project4$ cat project4.rc; source project4.rc 
 export EDITOR=/usr/bin/vim
@@ -33,8 +41,9 @@ export AWS_DEFAULT_REGION=us-west-2
 export NAME=project4.dev.oyarsa.net
 export KOPS_STATE_STORE=s3://project4-dev-oyarsa-net-state-store
 ```
-**Step 3:** 
+### Step 3: Create hosted zone
 ```
+# Create zone. Save nameservers for subdomain.json file described later. 
 (base) private@ubuntu:~/devops/project4$ ID=$(uuidgen) && aws route53 create-hosted-zone --name project4.dev.oyarsa.net --caller-reference $ID | \
 >     jq .DelegationSet.NameServers
 [
@@ -43,8 +52,12 @@ export KOPS_STATE_STORE=s3://project4-dev-oyarsa-net-state-store
   "ns-934.awsdns-52.net",
   "ns-1771.awsdns-29.co.uk"
 ]
+
+# Get hosted zone ID. We'll use this later. 
 (base) private@ubuntu:~/devops/project4$ aws route53 list-hosted-zones | jq '.HostedZones[] | select(.Name=="oyarsa.net.") | .Id'
 "/hostedzone/Z19KYSK4809JXK"
+
+# Create subdomain input file
 (base) private@ubuntu:~/devops/project4$ cat subdomain.json 
 {
   "Comment": "Create a subdomain NS record in the parent domain",
@@ -73,6 +86,8 @@ export KOPS_STATE_STORE=s3://project4-dev-oyarsa-net-state-store
     }
   ]
 }
+
+# Create a subdomain NS record in the parent domain
 (base) private@ubuntu:~/devops/project4$ aws route53 change-resource-record-sets \
 >  --hosted-zone-id Z19KYSK4809JXK \
 >  --change-batch file://subdomain.json
@@ -84,6 +99,8 @@ export KOPS_STATE_STORE=s3://project4-dev-oyarsa-net-state-store
         "Comment": "Create a subdomain NS record in the parent domain"
     }
 }
+
+# Describe hosted zone to verify
 (base) private@ubuntu:~/devops/project4$ aws route53 get-hosted-zone --id Z2RE54LR5QLE2R
 {
     "HostedZone": {
@@ -104,13 +121,15 @@ export KOPS_STATE_STORE=s3://project4-dev-oyarsa-net-state-store
         ]
     }
 }
+
+# Lookup nameservers to validate
 (base) private@ubuntu:~/devops/project4$ dig NS project4.dev.oyarsa.net +short
 ns-1343.awsdns-39.org.
 ns-1771.awsdns-29.co.uk.
 ns-49.awsdns-06.com.
 ns-934.awsdns-52.net.
 ```
-**Step 5:**
+### Step 5: Create bucket to store cluster configs
 ```
 (base) private@ubuntu:~/devops/project4$ aws s3api create-bucket \
 >     --bucket project4-dev-oyarsa-net-state-store \
@@ -119,7 +138,7 @@ ns-934.awsdns-52.net.
     "Location": "/project4-dev-oyarsa-net-state-store"
 }
 ```
-**Step 6:***
+### Step 6: Create cluster config
 ```
 (base) private@ubuntu:~/devops/project4$ kops create cluster --zones us-west-2a ${NAME}
 I0617 19:39:47.818141   98613 create_cluster.go:519] Inferred --cloud=aws from zone "us-west-2a"
@@ -532,12 +551,63 @@ Suggestions:
 
 Finally configure your cluster with: kops update cluster --name project4.dev.oyarsa.net --yes
 ```
-**Step 7:**
+
+### Step 7: Edit the cluster config if needed
 ```
 (base) private@ubuntu:~/devops/project4$ kops edit cluster ${NAME}
 Edit cancelled, no changes made.
 ```
-**Step 8:**
+
+### Step 8: Start the cluster
+```
+(base) private@ubuntu:~/devops/project4$ kops update cluster ${NAME} --yes
+
+*********************************************************************************
+
+A new kops version is available: 1.12.1
+
+Upgrading is recommended
+More information: https://github.com/kubernetes/kops/blob/master/permalinks/upgrade_kops.md#1.12.1
+
+*********************************************************************************
+
+I0618 00:13:16.955753   47611 executor.go:103] Tasks: 0 done / 85 total; 43 can run
+I0618 00:13:21.137547   47611 vfs_castore.go:729] Issuing new certificate: "apiserver-aggregator-ca"
+I0618 00:13:21.746067   47611 vfs_castore.go:729] Issuing new certificate: "etcd-clients-ca"
+I0618 00:13:22.330442   47611 vfs_castore.go:729] Issuing new certificate: "etcd-peers-ca-events"
+I0618 00:13:22.641309   47611 vfs_castore.go:729] Issuing new certificate: "etcd-peers-ca-main"
+I0618 00:13:22.746970   47611 vfs_castore.go:729] Issuing new certificate: "etcd-manager-ca-events"
+I0618 00:13:23.718856   47611 vfs_castore.go:729] Issuing new certificate: "ca"
+I0618 00:13:23.770154   47611 vfs_castore.go:729] Issuing new certificate: "etcd-manager-ca-main"
+I0618 00:13:25.019173   47611 executor.go:103] Tasks: 43 done / 85 total; 24 can run
+I0618 00:13:28.316493   47611 vfs_castore.go:729] Issuing new certificate: "kubecfg"
+I0618 00:13:28.671584   47611 vfs_castore.go:729] Issuing new certificate: "apiserver-proxy-client"
+I0618 00:13:30.018092   47611 vfs_castore.go:729] Issuing new certificate: "apiserver-aggregator"
+I0618 00:13:30.228618   47611 vfs_castore.go:729] Issuing new certificate: "kubelet"
+I0618 00:13:30.692400   47611 vfs_castore.go:729] Issuing new certificate: "kube-proxy"
+I0618 00:13:31.097725   47611 vfs_castore.go:729] Issuing new certificate: "master"
+I0618 00:13:31.315639   47611 vfs_castore.go:729] Issuing new certificate: "kubelet-api"
+I0618 00:13:31.438481   47611 vfs_castore.go:729] Issuing new certificate: "kube-controller-manager"
+I0618 00:13:32.641504   47611 vfs_castore.go:729] Issuing new certificate: "kops"
+I0618 00:13:32.986479   47611 vfs_castore.go:729] Issuing new certificate: "kube-scheduler"
+I0618 00:13:34.402608   47611 executor.go:103] Tasks: 67 done / 85 total; 16 can run
+I0618 00:13:35.647736   47611 executor.go:103] Tasks: 83 done / 85 total; 2 can run
+I0618 00:13:36.403123   47611 executor.go:103] Tasks: 85 done / 85 total; 0 can run
+I0618 00:13:36.403211   47611 dns.go:153] Pre-creating DNS records
+I0618 00:13:37.637852   47611 update_cluster.go:291] Exporting kubecfg for cluster
+kops has set your kubectl context to project4.dev.oyarsa.net
+
+Cluster is starting.  It should be ready in a few minutes.
+
+Suggestions:
+ * validate cluster: kops validate cluster
+ * list nodes: kubectl get nodes --show-labels
+ * ssh to the master: ssh -i ~/.ssh/id_rsa admin@api.project4.dev.oyarsa.net
+ * the admin user is specific to Debian. If not using Debian please use the appropriate user based on your OS.
+ * read about installing addons at: https://github.com/kubernetes/kops/blob/master/docs/addons.md.
+```
+
+### Step 8: Validate the cluster started
 ```
 (base) private@ubuntu:~/devops/project4$ kops validate cluster
 Using cluster from kubectl context: project4.dev.oyarsa.net
@@ -574,7 +644,8 @@ kube-proxy-ip-172-20-62-58.us-west-2.compute.internal                 1/1     Ru
 kube-proxy-ip-172-20-63-144.us-west-2.compute.internal                1/1     Running   0          4m22s
 kube-scheduler-ip-172-20-46-124.us-west-2.compute.internal            1/1     Running   0          5m24s
 ```
-**Step 9:**
+
+### Step 9: Use your `kubectl` commands to view the cluster
 ```
 (base) private@ubuntu:~/devops/project4$ kubectl get nodes
 NAME                                          STATUS   ROLES    AGE     VERSION
@@ -582,13 +653,14 @@ ip-172-20-49-66.us-west-2.compute.internal    Ready    master   3m57s   v1.12.8
 ip-172-20-51-209.us-west-2.compute.internal   Ready    node     3m2s    v1.12.8
 ip-172-20-62-153.us-west-2.compute.internal   Ready    node     2m53s   v1.12.8
 ```
-**Step 10:**
+
+### Step 10: Create a deployment and expose it
 ```
-(base) private@ubuntu:~/devops/project4$ kubectl get nodes
-NAME                                          STATUS   ROLES    AGE     VERSION
-ip-172-20-49-66.us-west-2.compute.internal    Ready    master   3m57s   v1.12.8
-ip-172-20-51-209.us-west-2.compute.internal   Ready    node     3m2s    v1.12.8
-ip-172-20-62-153.us-west-2.compute.internal   Ready    node     2m53s   v1.12.8
+
+(base) private@ubuntu:~/devops/project4$ kubectl run hello-world-project4 --replicas=3 --labels="run=load-balancer-example-project4" --image=gcr.io/google-samples/node-hello:1.0 --port=8080
+kubectl run --generator=deployment/apps.v1 is DEPRECATED and will be removed in a future version. Use kubectl run --generator=run-pod/v1 or kubectl create instead.
+deployment.apps/hello-world-project4 created
+
 (base) private@ubuntu:~/devops/project4$ kubectl get deployments
 NAME                   DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
 hello-world-project4   3         3         3            3           39s

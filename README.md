@@ -574,7 +574,6 @@ kube-proxy-ip-172-20-62-58.us-west-2.compute.internal                 1/1     Ru
 kube-proxy-ip-172-20-63-144.us-west-2.compute.internal                1/1     Running   0          4m22s
 kube-scheduler-ip-172-20-46-124.us-west-2.compute.internal            1/1     Running   0          5m24s
 ```
-```
 **Step 9:**
 ```
 (base) private@ubuntu:~/devops/project4$ kubectl get nodes
@@ -585,5 +584,17 @@ ip-172-20-62-153.us-west-2.compute.internal   Ready    node     2m53s   v1.12.8
 ```
 **Step 10:**
 ```
-
+(base) private@ubuntu:~/devops/project4$ kubectl get nodes
+NAME                                          STATUS   ROLES    AGE     VERSION
+ip-172-20-49-66.us-west-2.compute.internal    Ready    master   3m57s   v1.12.8
+ip-172-20-51-209.us-west-2.compute.internal   Ready    node     3m2s    v1.12.8
+ip-172-20-62-153.us-west-2.compute.internal   Ready    node     2m53s   v1.12.8
+(base) private@ubuntu:~/devops/project4$ kubectl get deployments
+NAME                   DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+hello-world-project4   3         3         3            3           39s
+(base) private@ubuntu:~/devops/project4$ kubectl get service
+NAME                  TYPE           CLUSTER-IP       EXTERNAL-IP                                                               PORT(S)          AGE
+kubernetes            ClusterIP      100.64.0.1       <none>                                                                    443/TCP          8m23s
+my-service-project4   LoadBalancer   100.65.142.117   a99351e3d919a11e9bcaa0696bd434c3-1696082251.us-west-2.elb.amazonaws.com   8080:31621/TCP   31s
+```
 ```

@@ -7,11 +7,11 @@
 
 ## Getting Started
 
-Complete "Getting Started" document @ https://github.com/kubernetes/kops/blob/master/docs/aws.md
+First, complete the ["Getting Started"](https://github.com/kubernetes/kops/blob/master/docs/aws.md)<br> "Getting Started" document @ https://github.com/kubernetes/kops/blob/master/docs/aws.md
 
-This tutorial will ask you to install kops, kubectl and setup your AWS environment. The tuturial will require an AWS account where you can create various resources. I've used a personal AWS account in the [configuration example](#configuration-example) and a public domain hosted by route53. There are other domain options including optional DNS using a .local domain in the guides. 
+The [getting started](https://github.com/kubernetes/kops/blob/master/docs/aws.md) tutorial will ask you to install kops, kubectl and setup your AWS environment. The tuturial will require an AWS account where you can create various resources. I've used a personal AWS account in the [configuration example](#configuration-example) and a public domain hosted by route53. There are other domain options including optional DNS using a .local domain in the guides. 
 
-**IMPORTANT** make sure you delete your deployment (Step 9) once you are done with this tutorial. You don't want to pay for aws resources that you do not intend to use.
+**IMPORTANT** make sure you delete your cluster (Step 9) once you are done with this tutorial. You don't want to pay for aws resources that you do not intend to use.
 
 ## Configuration example
 
@@ -19,7 +19,7 @@ In the configuration example  I've ommited the installation of kops, kubernetes 
 
 **My environment**
 
-- Public DNS (Scenario 1b in "Getting Started"): project4.dev.oyarsa.net
+- Public DNS (Scenario 1b in ["Getting Started"](https://github.com/kubernetes/kops/blob/master/docs/aws.md)): project4.dev.oyarsa.net
 - Region: us-west-2
 
 **Jump to**

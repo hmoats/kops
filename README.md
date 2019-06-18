@@ -111,3 +111,431 @@ ns-49.awsdns-06.com.
 ns-934.awsdns-52.net.
 ```
 **Step 5:**
+```
+(base) private@ubuntu:~/devops/project4$ aws s3api create-bucket \
+>     --bucket project4-dev-oyarsa-net-state-store \
+>     --region us-east-1
+{
+    "Location": "/project4-dev-oyarsa-net-state-store"
+}
+```
+**Step 6:***
+```
+(base) private@ubuntu:~/devops/project4$ kops create cluster --zones us-west-2a ${NAME}
+I0617 19:39:47.818141   98613 create_cluster.go:519] Inferred --cloud=aws from zone "us-west-2a"
+I0617 19:39:48.005262   98613 subnets.go:184] Assigned CIDR 172.20.32.0/19 to subnet us-west-2a
+I0617 19:39:49.937294   98613 create_cluster.go:1486] Using SSH public key: /home/private/.ssh/id_rsa.pub
+Previewing changes that will be made:
+
+
+*********************************************************************************
+
+A new kops version is available: 1.12.1
+
+Upgrading is recommended
+More information: https://github.com/kubernetes/kops/blob/master/permalinks/upgrade_kops.md#1.12.1
+
+*********************************************************************************
+
+I0617 19:39:51.606516   98613 executor.go:103] Tasks: 0 done / 85 total; 43 can run
+I0617 19:39:52.277637   98613 executor.go:103] Tasks: 43 done / 85 total; 24 can run
+I0617 19:39:52.843975   98613 executor.go:103] Tasks: 67 done / 85 total; 16 can run
+I0617 19:39:53.120330   98613 executor.go:103] Tasks: 83 done / 85 total; 2 can run
+I0617 19:39:53.233955   98613 executor.go:103] Tasks: 85 done / 85 total; 0 can run
+Will create resources:
+  AutoscalingGroup/master-us-west-2a.masters.project4.dev.oyarsa.net
+  	Granularity         	1Minute
+  	LaunchConfiguration 	name:master-us-west-2a.masters.project4.dev.oyarsa.net
+  	MaxSize             	1
+  	Metrics             	[GroupDesiredCapacity, GroupInServiceInstances, GroupMaxSize, GroupMinSize, GroupPendingInstances, GroupStandbyInstances, GroupTerminatingInstances, GroupTotalInstances]
+  	MinSize             	1
+  	Subnets             	[name:us-west-2a.project4.dev.oyarsa.net]
+  	SuspendProcesses    	[]
+  	Tags                	{Name: master-us-west-2a.masters.project4.dev.oyarsa.net, KubernetesCluster: project4.dev.oyarsa.net, k8s.io/cluster-autoscaler/node-template/label/kops.k8s.io/instancegroup: master-us-west-2a, k8s.io/role/master: 1}
+
+  AutoscalingGroup/nodes.project4.dev.oyarsa.net
+  	Granularity         	1Minute
+  	LaunchConfiguration 	name:nodes.project4.dev.oyarsa.net
+  	MaxSize             	2
+  	Metrics             	[GroupDesiredCapacity, GroupInServiceInstances, GroupMaxSize, GroupMinSize, GroupPendingInstances, GroupStandbyInstances, GroupTerminatingInstances, GroupTotalInstances]
+  	MinSize             	2
+  	Subnets             	[name:us-west-2a.project4.dev.oyarsa.net]
+  	SuspendProcesses    	[]
+  	Tags                	{k8s.io/cluster-autoscaler/node-template/label/kops.k8s.io/instancegroup: nodes, k8s.io/role/node: 1, Name: nodes.project4.dev.oyarsa.net, KubernetesCluster: project4.dev.oyarsa.net}
+
+  DHCPOptions/project4.dev.oyarsa.net
+  	DomainName          	us-west-2.compute.internal
+  	DomainNameServers   	AmazonProvidedDNS
+  	Shared              	false
+  	Tags                	{Name: project4.dev.oyarsa.net, KubernetesCluster: project4.dev.oyarsa.net, kubernetes.io/cluster/project4.dev.oyarsa.net: owned}
+
+  EBSVolume/a.etcd-events.project4.dev.oyarsa.net
+  	AvailabilityZone    	us-west-2a
+  	Encrypted           	false
+  	SizeGB              	20
+  	Tags                	{Name: a.etcd-events.project4.dev.oyarsa.net, KubernetesCluster: project4.dev.oyarsa.net, k8s.io/etcd/events: a/a, k8s.io/role/master: 1, kubernetes.io/cluster/project4.dev.oyarsa.net: owned}
+  	VolumeType          	gp2
+
+  EBSVolume/a.etcd-main.project4.dev.oyarsa.net
+  	AvailabilityZone    	us-west-2a
+  	Encrypted           	false
+  	SizeGB              	20
+  	Tags                	{k8s.io/etcd/main: a/a, k8s.io/role/master: 1, kubernetes.io/cluster/project4.dev.oyarsa.net: owned, Name: a.etcd-main.project4.dev.oyarsa.net, KubernetesCluster: project4.dev.oyarsa.net}
+  	VolumeType          	gp2
+
+  IAMInstanceProfile/masters.project4.dev.oyarsa.net
+  	Shared              	false
+
+  IAMInstanceProfile/nodes.project4.dev.oyarsa.net
+  	Shared              	false
+
+  IAMInstanceProfileRole/masters.project4.dev.oyarsa.net
+  	InstanceProfile     	name:masters.project4.dev.oyarsa.net id:masters.project4.dev.oyarsa.net
+  	Role                	name:masters.project4.dev.oyarsa.net
+
+  IAMInstanceProfileRole/nodes.project4.dev.oyarsa.net
+  	InstanceProfile     	name:nodes.project4.dev.oyarsa.net id:nodes.project4.dev.oyarsa.net
+  	Role                	name:nodes.project4.dev.oyarsa.net
+
+  IAMRole/masters.project4.dev.oyarsa.net
+  	ExportWithID        	masters
+
+  IAMRole/nodes.project4.dev.oyarsa.net
+  	ExportWithID        	nodes
+
+  IAMRolePolicy/masters.project4.dev.oyarsa.net
+  	Role                	name:masters.project4.dev.oyarsa.net
+
+  IAMRolePolicy/nodes.project4.dev.oyarsa.net
+  	Role                	name:nodes.project4.dev.oyarsa.net
+
+  InternetGateway/project4.dev.oyarsa.net
+  	VPC                 	name:project4.dev.oyarsa.net
+  	Shared              	false
+  	Tags                	{Name: project4.dev.oyarsa.net, KubernetesCluster: project4.dev.oyarsa.net, kubernetes.io/cluster/project4.dev.oyarsa.net: owned}
+
+  Keypair/apiserver-aggregator
+  	Signer              	name:apiserver-aggregator-ca id:cn=apiserver-aggregator-ca
+  	Subject             	cn=aggregator
+  	Type                	client
+  	Format              	v1alpha2
+
+  Keypair/apiserver-aggregator-ca
+  	Subject             	cn=apiserver-aggregator-ca
+  	Type                	ca
+  	Format              	v1alpha2
+
+  Keypair/apiserver-proxy-client
+  	Signer              	name:ca id:cn=kubernetes
+  	Subject             	cn=apiserver-proxy-client
+  	Type                	client
+  	Format              	v1alpha2
+
+  Keypair/ca
+  	Subject             	cn=kubernetes
+  	Type                	ca
+  	Format              	v1alpha2
+
+  Keypair/etcd-clients-ca
+  	Subject             	cn=etcd-clients-ca
+  	Type                	ca
+  	Format              	v1alpha2
+
+  Keypair/etcd-manager-ca-events
+  	Subject             	cn=etcd-manager-ca-events
+  	Type                	ca
+  	Format              	v1alpha2
+
+  Keypair/etcd-manager-ca-main
+  	Subject             	cn=etcd-manager-ca-main
+  	Type                	ca
+  	Format              	v1alpha2
+
+  Keypair/etcd-peers-ca-events
+  	Subject             	cn=etcd-peers-ca-events
+  	Type                	ca
+  	Format              	v1alpha2
+
+  Keypair/etcd-peers-ca-main
+  	Subject             	cn=etcd-peers-ca-main
+  	Type                	ca
+  	Format              	v1alpha2
+
+  Keypair/kops
+  	Signer              	name:ca id:cn=kubernetes
+  	Subject             	o=system:masters,cn=kops
+  	Type                	client
+  	Format              	v1alpha2
+
+  Keypair/kube-controller-manager
+  	Signer              	name:ca id:cn=kubernetes
+  	Subject             	cn=system:kube-controller-manager
+  	Type                	client
+  	Format              	v1alpha2
+
+  Keypair/kube-proxy
+  	Signer              	name:ca id:cn=kubernetes
+  	Subject             	cn=system:kube-proxy
+  	Type                	client
+  	Format              	v1alpha2
+
+  Keypair/kube-scheduler
+  	Signer              	name:ca id:cn=kubernetes
+  	Subject             	cn=system:kube-scheduler
+  	Type                	client
+  	Format              	v1alpha2
+
+  Keypair/kubecfg
+  	Signer              	name:ca id:cn=kubernetes
+  	Subject             	o=system:masters,cn=kubecfg
+  	Type                	client
+  	Format              	v1alpha2
+
+  Keypair/kubelet
+  	Signer              	name:ca id:cn=kubernetes
+  	Subject             	o=system:nodes,cn=kubelet
+  	Type                	client
+  	Format              	v1alpha2
+
+  Keypair/kubelet-api
+  	Signer              	name:ca id:cn=kubernetes
+  	Subject             	cn=kubelet-api
+  	Type                	client
+  	Format              	v1alpha2
+
+  Keypair/master
+  	AlternateNames      	[100.64.0.1, 127.0.0.1, api.internal.project4.dev.oyarsa.net, api.project4.dev.oyarsa.net, kubernetes, kubernetes.default, kubernetes.default.svc, kubernetes.default.svc.cluster.local]
+  	Signer              	name:ca id:cn=kubernetes
+  	Subject             	cn=kubernetes-master
+  	Type                	server
+  	Format              	v1alpha2
+
+  LaunchConfiguration/master-us-west-2a.masters.project4.dev.oyarsa.net
+  	AssociatePublicIP   	true
+  	IAMInstanceProfile  	name:masters.project4.dev.oyarsa.net id:masters.project4.dev.oyarsa.net
+  	ImageID             	kope.io/k8s-1.12-debian-stretch-amd64-hvm-ebs-2019-05-13
+  	InstanceType        	m3.medium
+  	RootVolumeSize      	64
+  	RootVolumeType      	gp2
+  	SSHKey              	name:kubernetes.project4.dev.oyarsa.net-f5:e5:9f:b9:89:b2:fc:b3:d1:37:ad:2b:79:de:e6:00 id:kubernetes.project4.dev.oyarsa.net-f5:e5:9f:b9:89:b2:fc:b3:d1:37:ad:2b:79:de:e6:00
+  	SecurityGroups      	[name:masters.project4.dev.oyarsa.net]
+  	SpotPrice           	
+
+  LaunchConfiguration/nodes.project4.dev.oyarsa.net
+  	AssociatePublicIP   	true
+  	IAMInstanceProfile  	name:nodes.project4.dev.oyarsa.net id:nodes.project4.dev.oyarsa.net
+  	ImageID             	kope.io/k8s-1.12-debian-stretch-amd64-hvm-ebs-2019-05-13
+  	InstanceType        	t2.medium
+  	RootVolumeSize      	128
+  	RootVolumeType      	gp2
+  	SSHKey              	name:kubernetes.project4.dev.oyarsa.net-f5:e5:9f:b9:89:b2:fc:b3:d1:37:ad:2b:79:de:e6:00 id:kubernetes.project4.dev.oyarsa.net-f5:e5:9f:b9:89:b2:fc:b3:d1:37:ad:2b:79:de:e6:00
+  	SecurityGroups      	[name:nodes.project4.dev.oyarsa.net]
+  	SpotPrice           	
+
+  ManagedFile/etcd-cluster-spec-events
+  	Location            	backups/etcd/events/control/etcd-cluster-spec
+
+  ManagedFile/etcd-cluster-spec-main
+  	Location            	backups/etcd/main/control/etcd-cluster-spec
+
+  ManagedFile/manifests-etcdmanager-events
+  	Location            	manifests/etcd/events.yaml
+
+  ManagedFile/manifests-etcdmanager-main
+  	Location            	manifests/etcd/main.yaml
+
+  ManagedFile/project4.dev.oyarsa.net-addons-bootstrap
+  	Location            	addons/bootstrap-channel.yaml
+
+  ManagedFile/project4.dev.oyarsa.net-addons-core.addons.k8s.io
+  	Location            	addons/core.addons.k8s.io/v1.4.0.yaml
+
+  ManagedFile/project4.dev.oyarsa.net-addons-dns-controller.addons.k8s.io-k8s-1.12
+  	Location            	addons/dns-controller.addons.k8s.io/k8s-1.12.yaml
+
+  ManagedFile/project4.dev.oyarsa.net-addons-dns-controller.addons.k8s.io-k8s-1.6
+  	Location            	addons/dns-controller.addons.k8s.io/k8s-1.6.yaml
+
+  ManagedFile/project4.dev.oyarsa.net-addons-dns-controller.addons.k8s.io-pre-k8s-1.6
+  	Location            	addons/dns-controller.addons.k8s.io/pre-k8s-1.6.yaml
+
+  ManagedFile/project4.dev.oyarsa.net-addons-kube-dns.addons.k8s.io-k8s-1.12
+  	Location            	addons/kube-dns.addons.k8s.io/k8s-1.12.yaml
+
+  ManagedFile/project4.dev.oyarsa.net-addons-kube-dns.addons.k8s.io-k8s-1.6
+  	Location            	addons/kube-dns.addons.k8s.io/k8s-1.6.yaml
+
+  ManagedFile/project4.dev.oyarsa.net-addons-kube-dns.addons.k8s.io-pre-k8s-1.6
+  	Location            	addons/kube-dns.addons.k8s.io/pre-k8s-1.6.yaml
+
+  ManagedFile/project4.dev.oyarsa.net-addons-kubelet-api.rbac.addons.k8s.io-k8s-1.9
+  	Location            	addons/kubelet-api.rbac.addons.k8s.io/k8s-1.9.yaml
+
+  ManagedFile/project4.dev.oyarsa.net-addons-limit-range.addons.k8s.io
+  	Location            	addons/limit-range.addons.k8s.io/v1.5.0.yaml
+
+  ManagedFile/project4.dev.oyarsa.net-addons-rbac.addons.k8s.io-k8s-1.8
+  	Location            	addons/rbac.addons.k8s.io/k8s-1.8.yaml
+
+  ManagedFile/project4.dev.oyarsa.net-addons-storage-aws.addons.k8s.io-v1.6.0
+  	Location            	addons/storage-aws.addons.k8s.io/v1.6.0.yaml
+
+  ManagedFile/project4.dev.oyarsa.net-addons-storage-aws.addons.k8s.io-v1.7.0
+  	Location            	addons/storage-aws.addons.k8s.io/v1.7.0.yaml
+
+  Route/0.0.0.0/0
+  	RouteTable          	name:project4.dev.oyarsa.net
+  	CIDR                	0.0.0.0/0
+  	InternetGateway     	name:project4.dev.oyarsa.net
+
+  RouteTable/project4.dev.oyarsa.net
+  	VPC                 	name:project4.dev.oyarsa.net
+  	Shared              	false
+  	Tags                	{KubernetesCluster: project4.dev.oyarsa.net, kubernetes.io/cluster/project4.dev.oyarsa.net: owned, kubernetes.io/kops/role: public, Name: project4.dev.oyarsa.net}
+
+  RouteTableAssociation/us-west-2a.project4.dev.oyarsa.net
+  	RouteTable          	name:project4.dev.oyarsa.net
+  	Subnet              	name:us-west-2a.project4.dev.oyarsa.net
+
+  SSHKey/kubernetes.project4.dev.oyarsa.net-f5:e5:9f:b9:89:b2:fc:b3:d1:37:ad:2b:79:de:e6:00
+  	KeyFingerprint      	42:91:20:31:1a:ce:40:6c:c9:f0:10:3e:ab:c6:8e:6c
+
+  Secret/admin
+
+  Secret/kube
+
+  Secret/kube-proxy
+
+  Secret/kubelet
+
+  Secret/system:controller_manager
+
+  Secret/system:dns
+
+  Secret/system:logging
+
+  Secret/system:monitoring
+
+  Secret/system:scheduler
+
+  SecurityGroup/masters.project4.dev.oyarsa.net
+  	Description         	Security group for masters
+  	VPC                 	name:project4.dev.oyarsa.net
+  	RemoveExtraRules    	[port=22, port=443, port=2380, port=2381, port=4001, port=4002, port=4789, port=179]
+  	Tags                	{Name: masters.project4.dev.oyarsa.net, KubernetesCluster: project4.dev.oyarsa.net, kubernetes.io/cluster/project4.dev.oyarsa.net: owned}
+
+  SecurityGroup/nodes.project4.dev.oyarsa.net
+  	Description         	Security group for nodes
+  	VPC                 	name:project4.dev.oyarsa.net
+  	RemoveExtraRules    	[port=22]
+  	Tags                	{Name: nodes.project4.dev.oyarsa.net, KubernetesCluster: project4.dev.oyarsa.net, kubernetes.io/cluster/project4.dev.oyarsa.net: owned}
+
+  SecurityGroupRule/all-master-to-master
+  	SecurityGroup       	name:masters.project4.dev.oyarsa.net
+  	SourceGroup         	name:masters.project4.dev.oyarsa.net
+
+  SecurityGroupRule/all-master-to-node
+  	SecurityGroup       	name:nodes.project4.dev.oyarsa.net
+  	SourceGroup         	name:masters.project4.dev.oyarsa.net
+
+  SecurityGroupRule/all-node-to-node
+  	SecurityGroup       	name:nodes.project4.dev.oyarsa.net
+  	SourceGroup         	name:nodes.project4.dev.oyarsa.net
+
+  SecurityGroupRule/https-external-to-master-0.0.0.0/0
+  	SecurityGroup       	name:masters.project4.dev.oyarsa.net
+  	CIDR                	0.0.0.0/0
+  	Protocol            	tcp
+  	FromPort            	443
+  	ToPort              	443
+
+  SecurityGroupRule/master-egress
+  	SecurityGroup       	name:masters.project4.dev.oyarsa.net
+  	CIDR                	0.0.0.0/0
+  	Egress              	true
+
+  SecurityGroupRule/node-egress
+  	SecurityGroup       	name:nodes.project4.dev.oyarsa.net
+  	CIDR                	0.0.0.0/0
+  	Egress              	true
+
+  SecurityGroupRule/node-to-master-tcp-1-2379
+  	SecurityGroup       	name:masters.project4.dev.oyarsa.net
+  	Protocol            	tcp
+  	FromPort            	1
+  	ToPort              	2379
+  	SourceGroup         	name:nodes.project4.dev.oyarsa.net
+
+  SecurityGroupRule/node-to-master-tcp-2382-4000
+  	SecurityGroup       	name:masters.project4.dev.oyarsa.net
+  	Protocol            	tcp
+  	FromPort            	2382
+  	ToPort              	4000
+  	SourceGroup         	name:nodes.project4.dev.oyarsa.net
+
+  SecurityGroupRule/node-to-master-tcp-4003-65535
+  	SecurityGroup       	name:masters.project4.dev.oyarsa.net
+  	Protocol            	tcp
+  	FromPort            	4003
+  	ToPort              	65535
+  	SourceGroup         	name:nodes.project4.dev.oyarsa.net
+
+  SecurityGroupRule/node-to-master-udp-1-65535
+  	SecurityGroup       	name:masters.project4.dev.oyarsa.net
+  	Protocol            	udp
+  	FromPort            	1
+  	ToPort              	65535
+  	SourceGroup         	name:nodes.project4.dev.oyarsa.net
+
+  SecurityGroupRule/ssh-external-to-master-0.0.0.0/0
+  	SecurityGroup       	name:masters.project4.dev.oyarsa.net
+  	CIDR                	0.0.0.0/0
+  	Protocol            	tcp
+  	FromPort            	22
+  	ToPort              	22
+
+  SecurityGroupRule/ssh-external-to-node-0.0.0.0/0
+  	SecurityGroup       	name:nodes.project4.dev.oyarsa.net
+  	CIDR                	0.0.0.0/0
+  	Protocol            	tcp
+  	FromPort            	22
+  	ToPort              	22
+
+  Subnet/us-west-2a.project4.dev.oyarsa.net
+  	ShortName           	us-west-2a
+  	VPC                 	name:project4.dev.oyarsa.net
+  	AvailabilityZone    	us-west-2a
+  	CIDR                	172.20.32.0/19
+  	Shared              	false
+  	Tags                	{Name: us-west-2a.project4.dev.oyarsa.net, KubernetesCluster: project4.dev.oyarsa.net, kubernetes.io/cluster/project4.dev.oyarsa.net: owned, SubnetType: Public, kubernetes.io/role/elb: 1}
+
+  VPC/project4.dev.oyarsa.net
+  	CIDR                	172.20.0.0/16
+  	EnableDNSHostnames  	true
+  	EnableDNSSupport    	true
+  	Shared              	false
+  	Tags                	{Name: project4.dev.oyarsa.net, KubernetesCluster: project4.dev.oyarsa.net, kubernetes.io/cluster/project4.dev.oyarsa.net: owned}
+
+  VPCDHCPOptionsAssociation/project4.dev.oyarsa.net
+  	VPC                 	name:project4.dev.oyarsa.net
+  	DHCPOptions         	name:project4.dev.oyarsa.net
+
+Must specify --yes to apply changes
+
+Cluster configuration has been created.
+
+Suggestions:
+ * list clusters with: kops get cluster
+ * edit this cluster with: kops edit cluster project4.dev.oyarsa.net
+ * edit your node instance group: kops edit ig --name=project4.dev.oyarsa.net nodes
+ * edit your master instance group: kops edit ig --name=project4.dev.oyarsa.net master-us-west-2a
+
+Finally configure your cluster with: kops update cluster --name project4.dev.oyarsa.net --yes
+```
+**Step 7:**
+```
+(base) private@ubuntu:~/devops/project4$ kops edit cluster ${NAME}
+Edit cancelled, no changes made.
+```
+**Step 8:**
+```

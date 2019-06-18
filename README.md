@@ -1,10 +1,8 @@
 # kops + kubernetes + AWS Tutorial
 
----
 ## Documentation Reference
 - https://github.com/kubernetes/kops/blob/master/docs/aws.md
 
----
 ## Getting Started
 
 Complete "Getting Started" document @ https://github.com/kubernetes/kops/blob/master/docs/aws.md
@@ -17,7 +15,6 @@ This tutorial will ask you to install kops, kubectl and setup your AWS environme
 - Account: private AWS
 - Region: us-west-2
 
----
 ## Step by Step Runbook
 
 In this runbook I've ommited the installation of kops, kubernetes and setting up your AWS environment. They are covered in the "Getting Started" document and many web sites describe how to handle any issues. The main purpose here is to show how I used kops to deploy my kubernetes cluster.
@@ -670,4 +667,8 @@ kubernetes            ClusterIP      100.64.0.1       <none>                    
 my-service-project4   LoadBalancer   100.65.142.117   a99351e3d919a11e9bcaa0696bd434c3-1696082251.us-west-2.elb.amazonaws.com   8080:31621/TCP   31s
 (base) private@ubuntu:~/devops/project4$ curl http://a99351e3d919a11e9bcaa0696bd434c3-1696082251.us-west-2.elb.amazonaws.com:8080
 Hello Kubernetes!
+```
+### Step 11: Delete cluster
+```
+(base) private@ubuntu:~/devops/project4$ kops delete cluster --name ${NAME} --yes
 ```

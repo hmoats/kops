@@ -20,20 +20,15 @@ In this runbook I've ommited the installation of kops, kubernetes and setting up
 - Region: us-west-2
 
 **Jump to**
+[Step 1 create a project](#step-1-create-a-project)<br>
 
-
-### Step 1: Created a project working directory
+### Step 1 create a project
 ```
+# Created a working directory
 (base) private@ubuntu:~/devops$ mkdir project4; cd project4
 (base) private@ubuntu:~/devops/project4$ 
-```
-### Step 2: Define some environment variables
-- EDITOR: set my editor as vim
-- AWS_DEFAULT_PROFILE: aws profile or authentication
-- AWS_DEFAULT_REGION: aws default region
-- NAME: k8s cluster domain
-- KOPS_STATE_STORE: define kops cluster state storage
-```
+
+# Set some variables for kops and aws
 (base) private@ubuntu:~/devops/project4$ cat project4.rc; source project4.rc 
 export EDITOR=/usr/bin/vim
 export AWS_DEFAULT_PROFILE=kops
@@ -41,9 +36,10 @@ export AWS_DEFAULT_REGION=us-west-2
 export NAME=project4.dev.oyarsa.net
 export KOPS_STATE_STORE=s3://project4-dev-oyarsa-net-state-store
 ```
-### Step 3: Create hosted zone
+
+### Step 3 create a hosted zone
 ```
-# Create zone. Save nameservers for subdomain.json file described later. 
+# Create zone. Save nameservers output for subdomain.json file described later. 
 (base) private@ubuntu:~/devops/project4$ ID=$(uuidgen) && aws route53 create-hosted-zone --name project4.dev.oyarsa.net --caller-reference $ID | \
 >     jq .DelegationSet.NameServers
 [
@@ -53,11 +49,11 @@ export KOPS_STATE_STORE=s3://project4-dev-oyarsa-net-state-store
   "ns-1771.awsdns-29.co.uk"
 ]
 
-# Get hosted zone ID. We'll use this later. 
+# Get hosted zone ID. We'll use this later.
 (base) private@ubuntu:~/devops/project4$ aws route53 list-hosted-zones | jq '.HostedZones[] | select(.Name=="oyarsa.net.") | .Id'
 "/hostedzone/Z19KYSK4809JXK"
 
-# Create subdomain input file
+# Create subdomain input file. Update the domain name and nameservers from the previous output.
 (base) private@ubuntu:~/devops/project4$ cat subdomain.json 
 {
   "Comment": "Create a subdomain NS record in the parent domain",

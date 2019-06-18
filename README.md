@@ -9,7 +9,7 @@
 
 First, complete the ["Getting Started"](https://github.com/kubernetes/kops/blob/master/docs/aws.md) document @ https://github.com/kubernetes/kops/blob/master/docs/aws.md
 
-The [getting started](https://github.com/kubernetes/kops/blob/master/docs/aws.md) tutorial will ask you to install kops, kubectl and setup your AWS environment. The tuturial will require an AWS account where you can create various resources. I've used a personal AWS account in the [configuration example](#configuration-example) and a public domain hosted by route53. There are other domain options including optional DNS using a .local domain in the guides. 
+The [getting started](https://github.com/kubernetes/kops/blob/master/docs/aws.md) tutorial will ask you to install kops, kubectl and setup your AWS environment. The tuturial will require an AWS account where you can create various resources. I've used a personal AWS account in the [configuration example](#configuration-example) and a public domain hosted by route53. There are other domain options including DNS using a .local domain.
 
 **IMPORTANT** make sure you delete your cluster (Step 9) once you are done with this tutorial. You don't want to pay for aws resources that you do not intend to use.
 

@@ -10,6 +10,8 @@ Complete "Getting Started" document @ https://github.com/kubernetes/kops/blob/ma
 
 This tutorial will ask you to install kops, kubectl and setup your AWS environment. The tuturial will require an AWS account where you can create various resources. I've used a personal AWS account in the [configuration example](#configuration-example) and a public domain hosted by route53. There are other domain options including optional DNS using a .local domain in the guides. 
 
+**IMPORTANT** make sure you delete your deployment (Step 9) once you are done with this tutorial. You don't want to pay for aws resources that you do not intend to use.
+
 ## Configuration example
 
 In this runbook I've ommited the installation of kops, kubernetes and setting up your AWS environment. They are covered in the "Getting Started" document and many web sites describe how to handle any issues. The main purpose of this runbook is to show how I used kops to deploy my kubernetes cluster on AWS using the instructions from the "Getting Started" document
@@ -20,11 +22,15 @@ In this runbook I've ommited the installation of kops, kubernetes and setting up
 - Region: us-west-2
 
 **Jump to**
-[Step 1 create a project](#step-1-create-a-project)<br>
-[Step 2 create a hosted zone](#step-2-create-a-hosted-zone)<br>
-[Step 1 create a project](#step-1-create-a-project)<br>
-[Step 1 create a project](#step-1-create-a-project)<br>
-
+- [Step 1 create a project](#step-1-create-a-project)
+- [Step 2 create a hosted zone](#step-2-create-a-hosted-zone)
+- [Step 3 create bucket to store cluster configs](#step-5-create-bucket-to-store-cluster-configs)
+- [Step 4 create cluster config](#step-4-create-cluster-config)
+- [Step 5 edit the cluster config if needed](#step-5-edit-the-cluster-config-if-needed)
+- [Step 6 start the cluster](#step-6-start-the-cluster)
+- [Step 7 validate the cluster has started](#step-7-validate-the-cluster-has-started)
+- [Step 8 create a deployment and expose it](#step-8-create-a-deployment-and-expose-it)
+- [Step 9 delete cluster](#step-9-delete-cluster)
 
 ### Step 1 create a project
 ```
@@ -129,7 +135,8 @@ ns-1771.awsdns-29.co.uk.
 ns-49.awsdns-06.com.
 ns-934.awsdns-52.net.
 ```
-### Step 5: Create bucket to store cluster configs
+
+### Step 3 create bucket to store cluster configs
 ```
 (base) private@ubuntu:~/devops/project4$ aws s3api create-bucket \
 >     --bucket project4-dev-oyarsa-net-state-store \
@@ -138,7 +145,7 @@ ns-934.awsdns-52.net.
     "Location": "/project4-dev-oyarsa-net-state-store"
 }
 ```
-### Step 6: Create cluster config
+### Step 4 create cluster config
 ```
 (base) private@ubuntu:~/devops/project4$ kops create cluster --zones us-west-2a ${NAME}
 I0617 19:39:47.818141   98613 create_cluster.go:519] Inferred --cloud=aws from zone "us-west-2a"
@@ -552,13 +559,13 @@ Suggestions:
 Finally configure your cluster with: kops update cluster --name project4.dev.oyarsa.net --yes
 ```
 
-### Step 7: Edit the cluster config if needed
+### Step 5 edit the cluster config if needed
 ```
 (base) private@ubuntu:~/devops/project4$ kops edit cluster ${NAME}
 Edit cancelled, no changes made.
 ```
 
-### Step 8: Start the cluster
+### Step 6 start the cluster
 ```
 (base) private@ubuntu:~/devops/project4$ kops update cluster ${NAME} --yes
 
@@ -607,8 +614,9 @@ Suggestions:
  * read about installing addons at: https://github.com/kubernetes/kops/blob/master/docs/addons.md.
 ```
 
-### Step 8: Validate the cluster started
+### Step 7 validate the cluster has started
 ```
+# Validate cluster. It may take serveral minutes for the cluster to start.
 (base) private@ubuntu:~/devops/project4$ kops validate cluster
 Using cluster from kubectl context: project4.dev.oyarsa.net
 
@@ -626,9 +634,13 @@ ip-172-20-62-58.us-west-2.compute.internal	node	True
 ip-172-20-63-144.us-west-2.compute.internal	node	True
 
 Your cluster project4.dev.oyarsa.net is ready
+
+# Get cluster info
 (base) private@ubuntu:~/devops/project4$ kops get clusters project4.dev.oyarsa.net
 NAME			CLOUD	ZONES
 project4.dev.oyarsa.net	aws	us-west-2a
+
+# Get k8s pods
 (base) private@ubuntu:~/devops/project4$ kubectl -n kube-system get po
 NAME                                                                  READY   STATUS    RESTARTS   AGE
 dns-controller-7cdbd4d448-b2qvf                                       1/1     Running   0          5m56s
@@ -645,8 +657,7 @@ kube-proxy-ip-172-20-63-144.us-west-2.compute.internal                1/1     Ru
 kube-scheduler-ip-172-20-46-124.us-west-2.compute.internal            1/1     Running   0          5m24s
 ```
 
-### Step 9: Use your `kubectl` commands to view the cluster
-```
+# Get k8s nodes
 (base) private@ubuntu:~/devops/project4$ kubectl get nodes
 NAME                                          STATUS   ROLES    AGE     VERSION
 ip-172-20-49-66.us-west-2.compute.internal    Ready    master   3m57s   v1.12.8
@@ -654,24 +665,30 @@ ip-172-20-51-209.us-west-2.compute.internal   Ready    node     3m2s    v1.12.8
 ip-172-20-62-153.us-west-2.compute.internal   Ready    node     2m53s   v1.12.8
 ```
 
-### Step 10: Create a deployment and expose it
+### Step 8 create a deployment and expose it
 ```
-
-(base) private@ubuntu:~/devops/project4$ kubectl run hello-world-project4 --replicas=3 --labels="run=load-balancer-example-project4" --image=gcr.io/google-samples/node-hello:1.0 --port=8080
+# Run a simple hello-world deployment
+(base) private@ubuntu:~/devops/project4$ kubectl run hello-world-project4 --replicas=3 --labels="run=load-balancer-example-project4" \
+>   --image=gcr.io/google-samples/node-hello:1.0 --port=8080
 kubectl run --generator=deployment/apps.v1 is DEPRECATED and will be removed in a future version. Use kubectl run --generator=run-pod/v1 or kubectl create instead.
 deployment.apps/hello-world-project4 created
 
+# Get deployments
 (base) private@ubuntu:~/devops/project4$ kubectl get deployments
 NAME                   DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
 hello-world-project4   3         3         3            3           39s
+
+# Get service
 (base) private@ubuntu:~/devops/project4$ kubectl get service
 NAME                  TYPE           CLUSTER-IP       EXTERNAL-IP                                                               PORT(S)          AGE
 kubernetes            ClusterIP      100.64.0.1       <none>                                                                    443/TCP          8m23s
 my-service-project4   LoadBalancer   100.65.142.117   a99351e3d919a11e9bcaa0696bd434c3-1696082251.us-west-2.elb.amazonaws.com   8080:31621/TCP   31s
+
+# Last, test your external service using the ELB aws name
 (base) private@ubuntu:~/devops/project4$ curl http://a99351e3d919a11e9bcaa0696bd434c3-1696082251.us-west-2.elb.amazonaws.com:8080
 Hello Kubernetes!
 ```
-### Step 11: Delete cluster
+### Step 9 delete cluster
 ```
 (base) private@ubuntu:~/devops/project4$ kops delete cluster --name ${NAME} --yes
 ```

@@ -21,6 +21,10 @@ In this runbook I've ommited the installation of kops, kubernetes and setting up
 
 **Jump to**
 [Step 1 create a project](#step-1-create-a-project)<br>
+[Step 2 create a hosted zone](#step-2-create-a-hosted-zone)<br>
+[Step 1 create a project](#step-1-create-a-project)<br>
+[Step 1 create a project](#step-1-create-a-project)<br>
+
 
 ### Step 1 create a project
 ```
@@ -37,7 +41,7 @@ export NAME=project4.dev.oyarsa.net
 export KOPS_STATE_STORE=s3://project4-dev-oyarsa-net-state-store
 ```
 
-### Step 3 create a hosted zone
+### Step 2 create a hosted zone
 ```
 # Create zone. Save nameservers output for subdomain.json file described later. 
 (base) private@ubuntu:~/devops/project4$ ID=$(uuidgen) && aws route53 create-hosted-zone --name project4.dev.oyarsa.net --caller-reference $ID | \

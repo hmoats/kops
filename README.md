@@ -7,7 +7,7 @@
 
 ## Getting Started
 
-First, complete the ["Getting Started"](https://github.com/kubernetes/kops/blob/master/docs/aws.md)<br> "Getting Started" document @ https://github.com/kubernetes/kops/blob/master/docs/aws.md
+First, complete the ["Getting Started"](https://github.com/kubernetes/kops/blob/master/docs/aws.md) document @ https://github.com/kubernetes/kops/blob/master/docs/aws.md
 
 The [getting started](https://github.com/kubernetes/kops/blob/master/docs/aws.md) tutorial will ask you to install kops, kubectl and setup your AWS environment. The tuturial will require an AWS account where you can create various resources. I've used a personal AWS account in the [configuration example](#configuration-example) and a public domain hosted by route53. There are other domain options including optional DNS using a .local domain in the guides. 
 

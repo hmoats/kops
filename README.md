@@ -3,6 +3,7 @@
 ### Table of Contents
 **[Getting Started](#getting-started)**<br>
 **[Configuration Example](#configuration-example)**<br>
+**[Command Cheat Sheet](#)**<br>
 
 ## Getting Started
 
@@ -14,7 +15,7 @@ This tutorial will ask you to install kops, kubectl and setup your AWS environme
 
 ## Configuration example
 
-In this runbook I've ommited the installation of kops, kubernetes and setting up your AWS environment. They are covered in the "Getting Started" document and many web sites describe how to handle any issues. The main purpose of this runbook is to show how I used kops to deploy my kubernetes cluster on AWS using the instructions from the "Getting Started" document
+In the configuration example  I've ommited the installation of kops, kubernetes and setting up your AWS environment. They are covered in the "Getting Started" document and many web sites describe how to handle any issues. The main purpose of this runbook is to show how I used kops to deploy my kubernetes cluster on AWS using the instructions from the "Getting Started" document
 
 **My environment**
 
@@ -34,11 +35,15 @@ In this runbook I've ommited the installation of kops, kubernetes and setting up
 
 ### Step 1 create a project
 ```
+##################################################################
 # Created a working directory
+##################################################################
 (base) private@ubuntu:~/devops$ mkdir project4; cd project4
 (base) private@ubuntu:~/devops/project4$ 
 
+##################################################################
 # Set some variables for kops and aws
+##################################################################
 (base) private@ubuntu:~/devops/project4$ cat project4.rc; source project4.rc 
 export EDITOR=/usr/bin/vim
 export AWS_DEFAULT_PROFILE=kops
@@ -49,7 +54,9 @@ export KOPS_STATE_STORE=s3://project4-dev-oyarsa-net-state-store
 
 ### Step 2 create a hosted zone
 ```
+##################################################################
 # Create zone. Save nameservers output for subdomain.json file described later. 
+##################################################################
 (base) private@ubuntu:~/devops/project4$ ID=$(uuidgen) && aws route53 create-hosted-zone --name project4.dev.oyarsa.net --caller-reference $ID | \
 >     jq .DelegationSet.NameServers
 [
@@ -59,11 +66,15 @@ export KOPS_STATE_STORE=s3://project4-dev-oyarsa-net-state-store
   "ns-1771.awsdns-29.co.uk"
 ]
 
+##################################################################
 # Get hosted zone ID. We'll use this later.
+##################################################################
 (base) private@ubuntu:~/devops/project4$ aws route53 list-hosted-zones | jq '.HostedZones[] | select(.Name=="oyarsa.net.") | .Id'
 "/hostedzone/Z19KYSK4809JXK"
 
+##################################################################
 # Create subdomain input file. Update the domain name and nameservers from the previous output.
+##################################################################
 (base) private@ubuntu:~/devops/project4$ cat subdomain.json 
 {
   "Comment": "Create a subdomain NS record in the parent domain",
@@ -93,7 +104,9 @@ export KOPS_STATE_STORE=s3://project4-dev-oyarsa-net-state-store
   ]
 }
 
+##################################################################
 # Create a subdomain NS record in the parent domain
+##################################################################
 (base) private@ubuntu:~/devops/project4$ aws route53 change-resource-record-sets \
 >  --hosted-zone-id Z19KYSK4809JXK \
 >  --change-batch file://subdomain.json
@@ -106,7 +119,9 @@ export KOPS_STATE_STORE=s3://project4-dev-oyarsa-net-state-store
     }
 }
 
+##################################################################
 # Describe hosted zone to verify
+##################################################################
 (base) private@ubuntu:~/devops/project4$ aws route53 get-hosted-zone --id Z2RE54LR5QLE2R
 {
     "HostedZone": {
@@ -128,7 +143,9 @@ export KOPS_STATE_STORE=s3://project4-dev-oyarsa-net-state-store
     }
 }
 
+##################################################################
 # Lookup nameservers to validate
+##################################################################
 (base) private@ubuntu:~/devops/project4$ dig NS project4.dev.oyarsa.net +short
 ns-1343.awsdns-39.org.
 ns-1771.awsdns-29.co.uk.
@@ -616,7 +633,9 @@ Suggestions:
 
 ### Step 7 validate the cluster has started
 ```
+##################################################################
 # Validate cluster. It may take serveral minutes for the cluster to start.
+##################################################################
 (base) private@ubuntu:~/devops/project4$ kops validate cluster
 Using cluster from kubectl context: project4.dev.oyarsa.net
 
@@ -635,12 +654,16 @@ ip-172-20-63-144.us-west-2.compute.internal	node	True
 
 Your cluster project4.dev.oyarsa.net is ready
 
+##################################################################
 # Get cluster info
+##################################################################
 (base) private@ubuntu:~/devops/project4$ kops get clusters project4.dev.oyarsa.net
 NAME			CLOUD	ZONES
 project4.dev.oyarsa.net	aws	us-west-2a
 
+##################################################################
 # Get k8s pods
+##################################################################
 (base) private@ubuntu:~/devops/project4$ kubectl -n kube-system get po
 NAME                                                                  READY   STATUS    RESTARTS   AGE
 dns-controller-7cdbd4d448-b2qvf                                       1/1     Running   0          5m56s
@@ -655,9 +678,10 @@ kube-proxy-ip-172-20-46-124.us-west-2.compute.internal                1/1     Ru
 kube-proxy-ip-172-20-62-58.us-west-2.compute.internal                 1/1     Running   0          4m11s
 kube-proxy-ip-172-20-63-144.us-west-2.compute.internal                1/1     Running   0          4m22s
 kube-scheduler-ip-172-20-46-124.us-west-2.compute.internal            1/1     Running   0          5m24s
-```
 
+##################################################################
 # Get k8s nodes
+##################################################################
 (base) private@ubuntu:~/devops/project4$ kubectl get nodes
 NAME                                          STATUS   ROLES    AGE     VERSION
 ip-172-20-49-66.us-west-2.compute.internal    Ready    master   3m57s   v1.12.8
@@ -667,27 +691,36 @@ ip-172-20-62-153.us-west-2.compute.internal   Ready    node     2m53s   v1.12.8
 
 ### Step 8 create a deployment and expose it
 ```
+##################################################################
 # Run a simple hello-world deployment
+##################################################################
 (base) private@ubuntu:~/devops/project4$ kubectl run hello-world-project4 --replicas=3 --labels="run=load-balancer-example-project4" \
 >   --image=gcr.io/google-samples/node-hello:1.0 --port=8080
 kubectl run --generator=deployment/apps.v1 is DEPRECATED and will be removed in a future version. Use kubectl run --generator=run-pod/v1 or kubectl create instead.
 deployment.apps/hello-world-project4 created
 
+##################################################################
 # Get deployments
+##################################################################
 (base) private@ubuntu:~/devops/project4$ kubectl get deployments
 NAME                   DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
 hello-world-project4   3         3         3            3           39s
 
+##################################################################
 # Get service
+##################################################################
 (base) private@ubuntu:~/devops/project4$ kubectl get service
 NAME                  TYPE           CLUSTER-IP       EXTERNAL-IP                                                               PORT(S)          AGE
 kubernetes            ClusterIP      100.64.0.1       <none>                                                                    443/TCP          8m23s
 my-service-project4   LoadBalancer   100.65.142.117   a99351e3d919a11e9bcaa0696bd434c3-1696082251.us-west-2.elb.amazonaws.com   8080:31621/TCP   31s
 
+##################################################################
 # Last, test your external service using the ELB aws name
+##################################################################
 (base) private@ubuntu:~/devops/project4$ curl http://a99351e3d919a11e9bcaa0696bd434c3-1696082251.us-west-2.elb.amazonaws.com:8080
 Hello Kubernetes!
 ```
+
 ### Step 9 delete cluster
 ```
 (base) private@ubuntu:~/devops/project4$ kops delete cluster --name ${NAME} --yes
